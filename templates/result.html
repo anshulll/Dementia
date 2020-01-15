@@ -1,0 +1,58 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Bungee|Bungee+Shade|Covered+By+Your+Grace" rel="stylesheet">
+<style>
+body, html {
+  height: 100%;
+  margin: 0;
+}
+body {
+  /* The image used */
+  background-image: url("static/cool.png");
+
+  /* Full height */
+  height: 100%; 
+
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+body {
+  font-family: Roboto;
+  background: #005aa7;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to left, #005aa7, #fffde4);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to left,#005aa7, #fffde4
+    );
+  color: black;
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.para{
+ font-size: 2em; 
+}
+</style>	
+</head>
+<body>
+
+<p class="para"><b><a href={{ url_for('index') }} target="_self">Home</a></b></p>
+<div class="container">
+<div class="page-header">
+<h1>{{ 100-listt }} % chances of dementia</h1>
+{% if result==1 %}
+<h2>YOU MAY HAVE DEMENTIA.CONSULT A DOCTOR IMMEDIATELY.</h2>
+</div>
+{% else %}
+<h2>EVERYTHING LOOKS FINE</h2>
+{% endif %}
+</div>
+</div>
+</body>
+</html>
