@@ -1,3 +1,9 @@
+"""Routes for logged-in application."""
+from flask import Blueprint, render_template
+from flask_login import current_user
+from flask import current_app as app
+#from .assets import compile_auth_assets
+from flask_login import login_required
 import os
 import numpy as np
 import flask
@@ -29,17 +35,37 @@ from flask import make_response
 from functools import wraps, update_wrapper
 import datetime
 from datetime import timedelta
-#from statsmodels.tsa.statespace.sarimax import SARIMAX
-#from statsmodels.tsa.statespace.sarimax import SARIMAXResults as res
-curr_dir=os.getcwd()
-app=Flask(__name__,static_folder=os.path.join(curr_dir,"static"),template_folder=os.path.join(curr_dir,"templates"))
-#app=Flask(__name__)
-@app.route('/')
-@app.route('/index')
+"""Routes for user authentication."""
+from flask import redirect, render_template, flash, Blueprint, request, url_for
+from flask_login import login_required, logout_user, current_user, login_user
+from flask import current_app as app
+from werkzeug.security import generate_password_hash
+#from .assets import compile_auth_assets
+from .forms import LoginForm, SignupForm
+from .models import db, User,Score 
+from .import login_manager
 
 
-def index():
-    return flask.render_template('csv.html')
+
+# Blueprint Configuration
+main_bp = Blueprint('main_bp', __name__,
+                    template_folder='templates',
+                    static_folder='static')
+#compile_auth_assets(app)
+
+
+
+
+@main_bp.route('/', methods=['GET'])
+@login_required
+def dashboard():
+    """Serve logged in Dashboard."""
+    return render_template('csv.html',
+                           title='Flask-Login Tutorial.',
+                           template='dashboard-template',
+                           current_user=current_user,
+                           body="You are now logged in!")
+
 
 
 def features(segment_1):
@@ -51,7 +77,8 @@ def features(segment_1):
     return segment_1
 
 
-@app.route('/home',methods= ['GET','POST'])
+@main_bp.route('/home', methods=['GET','POST'])
+#@app.route('/home',methods= ['GET','POST'])
 def read_csv():
     if request.method=="POST":
         if request.files.get("txt",None) is not None: 
@@ -182,10 +209,22 @@ def read_csv():
                 if i==0:
                     c+=1
             g=(c*1.0/len(h))*100.0
-            f=0
-            if g<70.0:
-                f=1
-            else:
-                f=0
-            return flask.render_template('result.html',listt=g,result=f)
+            email=current_user.email
+            score= Score(email=email,result=g)
+            db.session.add(score)
+            db.session.commit()
+            #email=current_user.email
+            #score= Score.query.filter_by(email=email).first()
+            #score.objects().all()
+            return flask.render_template('result.html',listt=g)
 
+
+@main_bp.route('/history', methods=['GET','POST'])
+def history():
+    if request.method=="GET":
+            email=current_user.email
+            score= Score.query.filter_by(email=email)
+            y=list()
+            for x in score:
+                y.append(x.result)
+            return flask.render_template('history.html',history=y)
